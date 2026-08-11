@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#020205">
+<title>The Hairdemic Experience</title>
+<style>
+:root{
+  --bg:#020205;
+  --ink:#ffffff;
+  --muted:#a7afba;
+  --cyan:#16c9ff;
+  --pink:#ff2f9b;
+  --violet:#8a63ff;
+  --line:rgba(123,196,255,.18);
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:#020205;color:#fff;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Arial,sans-serif}
+body{overflow-x:hidden}
+button,textarea{font:inherit}
+#app{min-height:100svh}
+.stage{min-height:100svh;display:none;position:relative;overflow:hidden;background:#020205}
+.stage.active{display:block}
+.cosmos{position:absolute;inset:0;overflow:hidden;background:
+ radial-gradient(circle at 76% 18%,rgba(33,119,255,.18),transparent 22%),
+ radial-gradient(circle at 20% 72%,rgba(255,47,155,.17),transparent 28%),
+ radial-gradient(circle at 50% 50%,rgba(90,72,190,.08),transparent 42%),
+ linear-gradient(#020205,#040611 50%,#020205)}
+.cosmos:before,.cosmos:after{content:"";position:absolute;border-radius:50%;filter:blur(55px);opacity:.45}
+.cosmos:before{width:38vw;height:38vw;right:-10vw;top:3vh;background:rgba(22,201,255,.16)}
+.cosmos:after{width:46vw;height:46vw;left:-15vw;bottom:-10vh;background:rgba(255,47,155,.13)}
+canvas{position:absolute;inset:0;width:100%;height:100%}
+.topbar{position:fixed;z-index:50;left:0;right:0;top:0;padding:calc(14px + env(safe-area-inset-top)) 18px 14px;display:flex;align-items:center;gap:12px;background:linear-gradient(rgba(2,2,5,.88),rgba(2,2,5,0))}
+.back{display:none;background:transparent;border:0;color:#fff;font-size:27px;padding:0 2px;line-height:1;cursor:pointer}
+.brand{font-size:11px;letter-spacing:.24em;font-weight:750}
+.track{margin-left:auto;width:120px;height:2px;background:rgba(255,255,255,.12);overflow:hidden}
+.track i{display:block;width:0;height:100%;background:linear-gradient(90deg,var(--pink),var(--violet),var(--cyan));transition:.45s}
+.step{font-size:10px;color:#8e98a3}
+.hero{position:relative;z-index:4;min-height:100svh;display:grid;grid-template-columns:1fr minmax(320px,680px) 1fr;align-items:center;padding:110px 38px 70px;gap:28px}
+.center{text-align:center}
+.badge{width:78px;height:78px;border-radius:50%;display:grid;place-items:center;margin:0 auto 24px;font-weight:800;letter-spacing:.04em;background:radial-gradient(circle at 35% 30%,rgba(255,255,255,.11),rgba(29,13,54,.86));border:1px solid rgba(255,255,255,.22);box-shadow:0 0 0 1px rgba(255,47,155,.15),0 0 38px rgba(255,47,155,.22),0 0 58px rgba(22,201,255,.14)}
+.kicker{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#c9d0d7;font-weight:700;margin-bottom:18px}
+.welcome{font-size:clamp(62px,8vw,108px);line-height:.88;letter-spacing:-.065em;font-weight:760;margin:0;background:linear-gradient(90deg,#fff 6%,#ffc1e1 33%,#b28cff 58%,#65d8ff 86%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.headline{font-size:clamp(24px,3vw,39px);line-height:1.08;letter-spacing:-.035em;font-weight:650;margin:28px auto 0;max-width:680px}
+.sub{font-size:clamp(16px,1.6vw,20px);line-height:1.6;color:#aab3bd;max-width:620px;margin:20px auto 0}
+.cta{margin-top:30px;border:1px solid transparent;border-radius:999px;padding:15px 25px;color:#fff;font-weight:720;background:
+ linear-gradient(#070910,#070910) padding-box,
+ linear-gradient(90deg,var(--pink),var(--violet),var(--cyan)) border-box;
+ box-shadow:0 0 35px rgba(255,47,155,.14),0 0 45px rgba(22,201,255,.12);cursor:pointer}
+.orbitcol{display:flex;flex-direction:column;gap:24px}
+.orbitcol.left{align-items:flex-end}.orbitcol.right{align-items:flex-start}
+.orbitnode{position:relative;width:175px;padding:14px 16px;border-radius:20px;background:linear-gradient(145deg,rgba(10,12,22,.74),rgba(4,6,11,.55));border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(15px);box-shadow:0 12px 40px rgba(0,0,0,.24)}
+.orbitnode:before{content:"";position:absolute;width:10px;height:10px;border-radius:50%;top:18px;box-shadow:0 0 18px currentColor}
+.left .orbitnode:before{right:-26px}.right .orbitnode:before{left:-26px}
+.orbitnode.pink{color:#ff78bd}.orbitnode.cyan{color:#6edcff}.orbitnode.violet{color:#b496ff}
+.orbitnode b{display:block;color:#fff;font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
+.orbitnode span{font-size:11px;color:#8e98a3;line-height:1.35}
+.horizon{position:absolute;left:50%;bottom:-26vh;transform:translateX(-50%);width:150vw;height:50vh;border-radius:50%;border-top:1px solid rgba(142,104,255,.52);background:radial-gradient(ellipse at 50% 0%,rgba(90,66,255,.18),rgba(255,47,155,.07) 35%,rgba(22,201,255,.04) 55%,transparent 72%);box-shadow:0 -20px 90px rgba(104,71,255,.18)}
+.scrollcue{position:absolute;z-index:5;left:50%;transform:translateX(-50%);bottom:22px;font-size:9px;letter-spacing:.18em;color:#78838e;text-transform:uppercase}
+.screen{position:relative;z-index:4;min-height:100svh;display:flex;align-items:center;justify-content:center;padding:110px 20px 70px}
+.panel{width:min(820px,100%);background:rgba(6,9,15,.72);border:1px solid rgba(255,255,255,.08);border-radius:28px;padding:28px;backdrop-filter:blur(18px);box-shadow:0 30px 90px rgba(0,0,0,.35)}
+.qnum{font-size:10px;color:#76828e;letter-spacing:.14em}.q{font-size:clamp(30px,4.8vw,54px);line-height:1.04;letter-spacing:-.045em;font-weight:650;margin:14px 0 24px}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}.opt{border:1px solid #222a35;background:rgba(11,15,22,.86);color:#edf6fb;border-radius:16px;padding:17px;text-align:left;cursor:pointer}.opt.on,.opt:hover{border-color:var(--cyan);background:#0c1620}
+.row{display:flex;gap:10px}.btn{border:1px solid rgba(255,255,255,.12);background:#0b0f15;color:#fff;border-radius:999px;padding:13px 19px;font-weight:700;margin-top:20px;cursor:pointer}.btn.alt{background:transparent}
+textarea{width:100%;min-height:140px;background:#0a0e14;color:#fff;border:1px solid #252e39;border-radius:16px;padding:16px;outline:none}.title{font-size:clamp(42px,6vw,74px);line-height:.98;letter-spacing:-.055em;font-weight:700;margin:0}.lead{font-size:18px;line-height:1.6;color:#a5afb8;max-width:700px}
+.museum{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:26px}.ex{padding:22px;border-radius:22px;background:rgba(7,11,17,.8);border:1px solid #232d37}.ex h3{font-size:24px;margin:26px 0 8px}.ex p{color:#9aa5af;line-height:1.45}
+@media(max-width:900px){.hero{grid-template-columns:1fr;padding-left:18px;padding-right:18px}.orbitcol{position:absolute;inset:0;pointer-events:none}.orbitcol.left .orbitnode,.orbitcol.right .orbitnode{position:absolute;width:auto;padding:9px 12px;background:rgba(3,6,12,.58)}.orbitcol.left .orbitnode:nth-child(1){left:4%;top:23%}.orbitcol.left .orbitnode:nth-child(2){left:2%;top:48%}.orbitcol.left .orbitnode:nth-child(3){left:7%;bottom:18%}.orbitcol.right .orbitnode:nth-child(1){right:4%;top:24%}.orbitcol.right .orbitnode:nth-child(2){right:2%;top:50%}.orbitcol.right .orbitnode:nth-child(3){right:7%;bottom:18%}.orbitnode span{display:none}.orbitnode:before{display:none}.center{padding:0 10px}.welcome{font-size:clamp(56px,17vw,82px)}.headline{font-size:24px;max-width:360px}.sub{font-size:16px;max-width:340px}.horizon{width:190vw;bottom:-19vh;height:42vh}.museum,.opts{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="app">
+<div class="topbar"><button id="back" class="back">‹</button><div class="brand">HAIRDEMIC</div><div class="track"><i id="bar"></i></div><div id="step" class="step">ENTER</div></div>
+
+<section class="stage active" data-s="0">
+  <div class="cosmos"><canvas class="stars"></canvas><div class="horizon"></div></div>
+  <div class="hero">
+    <div class="orbitcol left">
+      <div class="orbitnode pink"><b>Your History</b><span>What happened before still matters.</span></div>
+      <div class="orbitnode violet"><b>Providers</b><span>Every relationship leaves context.</span></div>
+      <div class="orbitnode pink"><b>Products</b><span>What you used. What changed.</span></div>
+    </div>
+
+    <div class="center">
+      <div class="badge">HD</div>
+      <div class="kicker">Welcome to the Hairdemic Universe</div>
+      <h1 class="welcome">Welcome.</h1>
+      <div class="headline">You’ve lived it.<br>Now see what it means.</div>
+      <p class="sub">Every appointment. Every switch. Every setback. Every win. Bring them with you. You’re about to see your hair experience differently.</p>
+      <button class="cta next">Begin →</button>
+    </div>
+
+    <div class="orbitcol right">
+      <div class="orbitnode cyan"><b>Goals</b><span>Where you’re trying to go.</span></div>
+      <div class="orbitnode cyan"><b>Knowledge</b><span>What you know — and what still feels unclear.</span></div>
+      <div class="orbitnode violet"><b>Results</b><span>What changed over time.</span></div>
+    </div>
+  </div>
+  <div class="scrollcue">Enter another way of seeing hair care</div>
+</section>
+
+<section class="stage" data-s="1"><div class="cosmos"><canvas class="stars"></canvas></div><div class="screen"><div class="panel"><div class="kicker">Your Experience</div><div id="assessment"></div></div></div></section>
+
+<section class="stage" data-s="2"><div class="cosmos"><canvas class="stars"></canvas></div><div class="screen"><div class="panel"><div class="kicker">The Pattern</div><h2 class="title">What felt personal starts to look structural.</h2><p class="lead">Different women. Different cities. Different providers. Similar experiences keep repeating.</p><button class="btn next">Zoom out →</button></div></div></section>
+
+<section class="stage" data-s="3"><div class="cosmos"><canvas class="stars"></canvas></div><div class="screen"><div class="panel"><div class="kicker">The Hairdemic Lens</div><h2 class="title">Experience → Pattern → System → Possibility.</h2><p class="lead">Hairdemic does not stop at what went wrong. It asks what repeats, what that repetition reveals, and what should exist next.</p><button class="btn next">See how we got here →</button></div></div></section>
+
+<section class="stage" data-s="4"><div class="cosmos"><canvas class="stars"></canvas></div><div class="screen"><div class="panel"><div class="kicker">The Industry Evolved</div><h2 class="title">The world changed around your hair.</h2><p class="lead">Independence, specialization, social media, booking platforms, salon suites and direct-to-consumer products expanded choice — and made the journey more distributed.</p><button class="btn next">See the fragmentation →</button></div></div></section>
+
+<section class="stage" data-s="5"><div class="cosmos"><canvas class="stars"></canvas></div><div class="screen"><div class="panel"><div class="kicker">Fragmentation</div><h2 class="title">Your hair stayed one journey.</h2><p class="lead">The information, relationships and care around it did not always stay connected.</p><button class="btn next">Navigate today →</button></div></div></section>
+
+<section class="stage" data-s="6"><div class="cosmos"><canvas class="stars"></canvas></div><div class="screen"><div class="panel"><div class="kicker">Clarity Today</div><h2 class="title">Build a hair team. Carry your context.</h2><p class="lead">Know the specialty. Understand the business model. Track what matters. Stop expecting one disconnected piece to carry the entire journey.</p><button class="btn next">Enter the future →</button></div></div></section>
+
+<section class="stage" data-s="7"><div class="cosmos"><canvas class="stars"></canvas></div><div class="screen"><div class="panel"><div class="kicker">Museum of the Future</div><h2 class="title">What if hair care were built around the journey?</h2><div class="museum"><div class="ex"><small>01</small><h3>Your Hair Journey</h3><p>Time, care and growth as one connected story.</p></div><div class="ex"><small>02</small><h3>The Hair Record</h3><p>History that does not disappear when a provider changes.</p></div><div class="ex"><small>03</small><h3>Connected Consultation</h3><p>New provider. Same journey. You choose what travels.</p></div><div class="ex"><small>04</small><h3>Hair Hospital</h3><p>A future study in continuity, expertise and follow-up.</p></div></div><button class="btn next">See the movement →</button></div></div></section>
+
+<section class="stage" data-s="8"><div class="cosmos"><canvas class="stars"></canvas></div><div class="screen"><div class="panel"><div class="kicker">The Movement</div><h2 class="title">We can keep arguing about what disappeared. Or build forward.</h2><p class="lead">Consumers, professionals, students, educators and creators all carry part of the answer.</p><button class="btn next">Add my voice →</button></div></div></section>
+
+<section class="stage" data-s="9"><div class="cosmos"><canvas class="stars"></canvas></div><div class="screen"><div class="panel"><div class="kicker">Your Future</div><div class="q">What should the future of hair care feel like for you?</div><textarea id="future" placeholder="I want hair care to feel..."></textarea><button class="btn" id="finish">Complete my experience</button></div></div></section>
+
+<section class="stage" data-s="10"><div class="cosmos"><canvas class="stars"></canvas></div><div class="screen"><div class="panel"><div class="kicker">The Hairdemic Experience</div><h2 class="title">You saw the pattern. Now help build the possibility.</h2><p id="reality" class="lead"></p><h3>Your future</h3><p id="futureOut" class="lead"></p><h2 class="title" style="font-size:46px;margin-top:30px">The cure is in our hands.</h2><button class="btn" onclick="location.reload()">Experience again</button></div></div></section>
+</div>
+
+<script>
+const Q=[
+["providers","How many different hair professionals have cared for your hair in the last five years?",["1","2–3","4–5","6+"]],
+["history","When you meet a new provider, how much of your previous hair history do they usually know?",["Most of it","Some of it","Very little","Nothing"]],
+["memory","How often have you had to reconstruct your hair history from memory?",["Often","Sometimes","Rarely","Never"]],
+["conflict","How often have different professionals or sources given you conflicting guidance?",["Often","Sometimes","Rarely","Never"]],
+["restart","How often does changing a provider, routine or style feel like starting over?",["Often","Sometimes","Rarely","Never"]],
+["wish","What do you wish were easier about navigating hair care?",null]
+];
+let s=0,q=0,A={};
+const stages=[...document.querySelectorAll(".stage")],bar=document.getElementById("bar"),step=document.getElementById("step"),back=document.getElementById("back");
+function go(n){stages[s].classList.remove("active");s=n;stages[s].classList.add("active");bar.style.width=(s/(stages.length-1)*100)+"%";step.textContent=s===0?"ENTER":s===10?"COMPLETE":String(s).padStart(2,"0");back.style.display=s>0?"block":"none";scrollTo(0,0);bootStars()}
+document.querySelectorAll(".next").forEach(b=>b.onclick=()=>go(s+1));
+back.onclick=()=>{if(s===1&&q>0){q--;renderQ()}else if(s>0)go(s-1)}
+function renderQ(){let [k,t,o]=Q[q];let h=`<div class="qnum">QUESTION ${q+1} OF ${Q.length}</div><div class="q">${t}</div>`;
+if(o)h+=`<div class="opts">${o.map(v=>`<button class="opt ${A[k]===v?"on":""}" data-v="${v}">${v}</button>`).join("")}</div>`;
+else h+=`<textarea id="wish" placeholder="Tell Hairdemic...">${A[k]||""}</textarea>`;
+h+=`<div class="row">${q?'<button class="btn alt" id="qb">Back</button>':''}<button class="btn" id="qn">${q===Q.length-1?"See the pattern":"Continue"}</button></div>`;
+document.getElementById("assessment").innerHTML=h;
+document.querySelectorAll("[data-v]").forEach(b=>b.onclick=()=>{A[k]=b.dataset.v;renderQ()});
+let w=document.getElementById("wish");if(w)w.oninput=e=>A[k]=e.target.value;
+let qb=document.getElementById("qb");if(qb)qb.onclick=()=>{q--;renderQ()};
+document.getElementById("qn").onclick=()=>{if(o&&!A[k])return alert("Choose an answer.");if(q<Q.length-1){q++;renderQ()}else go(2)}}
+renderQ();
+document.getElementById("finish").onclick=()=>{let f=document.getElementById("future").value.trim();if(!f)return alert("Add your vision first.");document.getElementById("reality").textContent=`You reported ${A.providers||"multiple"} hair professional(s) in the last five years. New providers usually know ${(A.history||"some").toLowerCase()} of your history, and changing providers or routines feels like starting over ${(A.restart||"sometimes").toLowerCase()}.`;document.getElementById("futureOut").textContent=f;go(10)}
+function stars(canvas){
+ const host=canvas.parentElement,ctx=canvas.getContext("2d"),dpr=Math.min(devicePixelRatio,2);let w,h,pts=[];
+ function resize(){w=host.clientWidth;h=host.clientHeight;canvas.width=w*dpr;canvas.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);pts=Array.from({length:145},()=>({x:Math.random()*w,y:Math.random()*h,r:.4+Math.random()*1.8,a:.25+Math.random()*.75,t:Math.random()<.11?"pink":Math.random()<.24?"cyan":"white"}))}
+ resize();
+ function draw(){if(!host.parentElement.classList.contains("active"))return;ctx.clearRect(0,0,w,h);for(let p of pts){ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=p.t==="pink"?`rgba(255,47,155,${p.a})`:p.t==="cyan"?`rgba(22,201,255,${p.a})`:`rgba(255,255,255,${p.a})`;ctx.fill();if(p.r>1.5){ctx.beginPath();ctx.arc(p.x,p.y,p.r*5,0,Math.PI*2);ctx.fillStyle=p.t==="pink"?"rgba(255,47,155,.03)":p.t==="cyan"?"rgba(22,201,255,.03)":"rgba(255,255,255,.02)";ctx.fill()}}requestAnimationFrame(draw)}
+ draw()
+}
+function bootStars(){document.querySelectorAll(".stage.active .stars").forEach(stars)}
+bootStars();
+</script>
+</body>
+</html>
